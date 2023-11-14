@@ -1,2 +1,10 @@
 python manage.py startapp base
 python manage.py runserver
+
+list in loop ==> 
+
+rooms = [
+    {'id' : 1 , 'name' : 'Lets learn Python!!'},
+    {'id' : 2 , 'name' : 'Web dvelopers'},
+    {'id' : 3 , 'name' : 'Logo designers needed'}
+]
