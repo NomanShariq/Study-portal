@@ -1,5 +1,15 @@
+project create command:
 python manage.py startapp base
+
+run server cmnd:
 python manage.py runserver
+
+database:
+python manage.py makemigrations
+python manage.py migrate
+
+for creating new user for admin panel cmd:
+python manage.py createsuperuser
 
 list in loop ==> 
 
