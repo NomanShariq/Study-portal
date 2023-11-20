@@ -11,6 +11,12 @@ python manage.py migrate
 for creating new user for admin panel cmd:
 python manage.py createsuperuser
 
+
+
+for clearing command :
+cls
+
+
 list in loop ==> 
 
 rooms = [
