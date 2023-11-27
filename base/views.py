@@ -1,7 +1,7 @@
 from django.shortcuts import redirect, render
 from base.form import Roomform
-
-from base.models import Room
+from django.db.models import Q
+from base.models import Room, Topic
 
 # Create your views here.
 
@@ -12,8 +12,15 @@ from base.models import Room
 # ]
 
 def homepage(request):
-    rooms = Room.objects.all()
-    context = {'rooms' : rooms}
+    q = request.GET.get('q') if request.GET.get('q') != None else ''
+    rooms = Room.objects.filter(
+        Q(topic__name__icontains=q) |
+        Q(name__icontains=q) |
+        Q(description__icontains=q)  
+    )
+    topic = Topic.objects.all()
+    room_count = rooms.count()
+    context = {'rooms' : rooms , 'topic':topic , 'room_count': room_count}
     return render(request, 'base/home.html', context)
 
 def room(request,pk): 

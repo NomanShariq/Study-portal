@@ -1,7 +1,62 @@
-<a href="/">
-    LOGO
-</a>
-<!-- <a href="room/">
-    Room
-</a> -->
-<hr>
+
+    <style>
+        a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #ccc;
+            margin: 10px 0;
+        }
+
+        /* Search form styles */
+        form {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+            flex: 1;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+
+
+    <a href="/">
+        LOGO
+    </a>
+    <hr>
+
+    <form action="{% url 'home' %}" method="GET">
+        <input type="text" name="q" placeholder="Search Rooms...">
+    </form>
+
