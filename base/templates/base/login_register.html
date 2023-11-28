@@ -1,0 +1,42 @@
+{% extends 'main.html' %}
+
+{% block content %}
+    <style>
+        /* Custom CSS for form layout */
+        .login-form {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 600px; /* Adjust as needed */
+            margin: 0 auto;
+        }
+
+        .login-form input[type="text"],
+        .login-form input[type="password"] {
+            flex: 1;
+            padding: 10px;
+            margin-right: 10px;
+        }
+
+        .login-form input[type="submit"] {
+            padding: 10px 20px;
+        }
+
+        .login-form label {
+            flex-basis: 120px; /* Adjust label width as needed */
+            text-align: right;
+            margin-right: 10px;
+        }
+    </style>
+
+    <form action="" method="POST" class="login-form">
+        {% csrf_token %}
+        <label for="username">Login:</label>
+        <input type="text" name="username" placeholder="Enter Username">
+
+        <label for="password">Password:</label>
+        <input type="password" name="password" placeholder="Enter Password">
+
+        <input type="submit" value="Login">
+    </form>
+{% endblock content %}
