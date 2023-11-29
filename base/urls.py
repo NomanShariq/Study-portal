@@ -10,5 +10,6 @@ urlpatterns = [
     path('delete-form/<str:pk>', views.deleteForm , name='delete-room'),
     path('create-form/', views.createRoom , name='create-room'),
     path('login/', views.loginPage , name='login'),
+    path('register/', views.registerPage , name='register'),
     path('logout/', views.logoutUser , name='logout'),
 ]

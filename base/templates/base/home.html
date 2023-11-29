@@ -96,10 +96,12 @@
             <div class="room-list">
                 {% for room in rooms %}
                     <div class="room-item">
+                        {% if request.user == room.host %}
                         <a href="{% url 'update-room' room.id %}">Edit</a>
                         <a href="{% url 'delete-room' room.id %}">Delete</a>
+                        {% endif %}
                         <h2>{{ room.host.username }}</h2>
-                        <h5>{{ room.id }} -- <a href="{% url 'room' room.id %}">{{ room.name }}</a></h5>
+                        <h5>{{ room.id }} - <a href="{% url 'room' room.id %}">{{ room.name }}</a></h5>
                         <h2>{{ room.topic }}</h2>
                         <p>{{ room.description }}</p>
                         <hr>
