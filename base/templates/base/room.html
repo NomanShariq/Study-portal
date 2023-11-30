@@ -2,6 +2,51 @@
 
 {% block content %}
 
-<h1>{{rooms.name}}</h1>
+<style>
+    .whole-container {
+        display: flex;
+    }
+    .participants {
+        width: 400px; /* Adjust width as needed */
+    }
+</style>
 
-{% endblock content %}
+<div class="whole-container">
+    <div class="comment-wrapper">
+        <h1>{{ rooms.name }}</h1>
+        <p>{{ rooms.description }}</p>
+
+        <h2>Conversation</h2>
+
+        {% for message in room_messages %}
+            <div>
+                {% if request.user == message.user %}
+                <a href="{% url 'delete-message' message.id %}">Delete Message</a>
+                {% endif %}
+                <h4>@{{ message.user.username }} {{ message.created | timesince }} ago </h4>
+                <h3>{{ message.body }}</h3>
+                <hr>
+            </div>
+        {% endfor %}
+
+        {% if request.user.is_authenticated %}
+            <div>
+                <form method="POST" action="">
+                    {% csrf_token %}
+                    <input type="text" name="body" placeholder="Write your description....">
+                </form>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="participants">
+        <h3>Participants</h3>
+        {% for user in participants %}
+            <div>
+                <p>@{{user.username}}</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
