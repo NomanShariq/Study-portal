@@ -5,109 +5,43 @@
         /* Style for the grid layout */
         .home-container {
             display: grid;
-            grid-template-columns: 1fr 3fr;
-            gap: 20px; /* Add gap between columns */
+            grid-template-columns: 1fr 3fr 1fr;
         }
-
-        /* Left column styles */
-        .topics-column {
-            background-color: #f4f4f4;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        a.edit-link {
+            color: blue; /* Change color for edit link */
         }
-
-        .topics-column h1 {
-            font-size: 24px;
-            margin-bottom: 15px;
+        
+        a.delete-link {
+            color: red; /* Change color for delete link */
         }
-
-        .topics-list a {
-            display: block;
-            margin-bottom: 10px;
-            text-decoration: none;
-            color: #333;
-        }
-
-        /* Right column styles */
-        .rooms-column {
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .rooms-column a {
-            margin-right: 10px;
-            text-decoration: none;
-            color: #007bff;
-        }
-
-        .room-item {
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        .room-item h2 {
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
-
-        .room-item h5 {
-            margin-bottom: 10px;
-        }
-
-        .room-item p {
-            margin-bottom: 10px;
-            color: #666;
-        }
-
-        .room-item a {
-            color: #007bff;
-            text-decoration: none;
-        }
-
-        .room-item a:hover {
-            text-decoration: underline;
-        }
-
-        .room-item hr {
-            border: none;
-            border-top: 1px solid #ddd;
-            margin: 10px 0;
+        
+        a.create-link {
+            color: green; /* Change color for create link */
         }
     </style>
 
     <div class="home-container">
+                    <!-- All Topics Column -->        
         <div class="topics-column">
             <h1>Browse Topics</h1>
+            <hr>
             <div class="topics-list">
-                <a href="{% url 'home' %}">All</a><br/>
-                {% for topic in topic %}
-                    <a href="{% url 'home' %}?q={{topic.name}}">{{topic.name}}</a><br/>
-                {% endfor %}
+                {% include 'base/topic_component.html' %}
+            </div>
+        </div>
+                    <!-- Feed Column -->
+        <div class="rooms-column">
+            <a href="{% url 'create-room' %}" class="create-link">Create Room</a>
+            <hr>
+            <p>{{room_count}} Rooms available right now</p>
+            <div class="room-list">
+                {% include 'base/feed_component.html' %}
             </div>
         </div>
 
-        <div class="rooms-column">
-            <a href="{% url 'create-room' %}">Create Room</a>
-            <p>{{room_count}} Rooms available right now</p>
-            <div class="room-list">
-                {% for room in rooms %}
-                    <div class="room-item">
-                        {% if request.user == room.host %}
-                        <a href="{% url 'update-room' room.id %}">Edit</a>
-                        <a href="{% url 'delete-room' room.id %}">Delete</a>
-                        {% endif %}
-                        <h2>{{ room.host.username }}</h2>
-                        <h5>{{ room.id }} - <a href="{% url 'room' room.id %}">{{ room.name }}</a></h5>
-                        <h2>{{ room.topic }}</h2>
-                        <p>{{ room.description }}</p>
-                        <hr>
-                    </div>
-                {% endfor %}
-            </div>
+                    <!-- Recent Activity Column -->
+        <div>
+            {% include 'base/activity_component.html' %}
         </div>
-    </div>
+</div>
 {% endblock content %}

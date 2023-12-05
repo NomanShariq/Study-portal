@@ -73,8 +73,18 @@ def homepage(request):
     )
     topic = Topic.objects.all()
     room_count = rooms.count()
-    context = {'rooms' : rooms , 'topic':topic , 'room_count': room_count}
+    room_messages = Message.objects.filter(Q(room__topic__name__icontains=q))
+    
+    context = {'rooms' : rooms , 'topic':topic , 'room_count': room_count , 'room_messages' : room_messages}
     return render(request, 'base/home.html', context)
+
+def userProfile(request, pk):
+    user = User.objects.get(id=pk)
+    room = user.room_set.all()
+    room_messages = user.message_set.all()
+    topic = Topic.objects.all()
+    context = {'user':user , 'rooms' : room , 'topic' : topic , 'room_messages' : room_messages}
+    return render(request, 'base/profile.html', context) 
 
 def room(request,pk): 
     room = Room.objects.get(id=pk)
@@ -104,6 +114,21 @@ def createRoom(request):
     context = {'form': form}
     return render(request, 'base/room_form.html',context)
 
+@login_required(login_url="login")
+def editMsg(request, pk):
+    editmsg= Message.objects.get(id=pk)
+    form = Roomform(instance=editmsg)
+        
+    if request.method == 'POST':
+        editmsg = Roomform(request.POST, instance=editmsg)
+        if form.is_valid():
+           form.save()
+           return redirect('home')
+    
+    if request.user != editmsg.user:
+            return HttpResponse("You are not allowed here!!")
+    context = {'form': form}
+    return render(request, 'base/room_form.html', context)
 
 @login_required(login_url="login")
 def updateRoom(request, pk):
@@ -115,7 +140,7 @@ def updateRoom(request, pk):
         if form.is_valid():
            form.save()
            return redirect('home')
-       
+
     if request.user != room.host:
             return HttpResponse("You are not allowed here!!")
     context = {'form': form}
