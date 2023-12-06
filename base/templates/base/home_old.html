@@ -1,0 +1,47 @@
+{% extends "main.html" %}
+
+{% block content %}
+    <style>
+        /* Style for the grid layout */
+        .home-container {
+            display: grid;
+            grid-template-columns: 1fr 3fr 1fr;
+        }
+        a.edit-link {
+            color: blue; /* Change color for edit link */
+        }
+        
+        a.delete-link {
+            color: red; /* Change color for delete link */
+        }
+        
+        a.create-link {
+            color: green; /* Change color for create link */
+        }
+    </style>
+
+    <div class="home-container">
+                    <!-- All Topics Column -->        
+        <div class="topics-column">
+            <h1>Browse Topics</h1>
+            <hr>
+            <div class="topics-list">
+                {% include 'base/topic_component.html' %}
+            </div>
+        </div>
+                    <!-- Feed Column -->
+        <div class="rooms-column">
+            <a href="{% url 'create-room' %}" class="create-link">Create Room</a>
+            <hr>
+            <p>{{room_count}} Rooms available right now</p>
+            <div class="room-list">
+                {% include 'base/feed_component.html' %}
+            </div>
+        </div>
+
+                    <!-- Recent Activity Column -->
+        <div>
+            {% include 'base/activity_component.html' %}
+        </div>
+</div>
+{% endblock content %}
