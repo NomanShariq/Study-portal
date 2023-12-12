@@ -105,15 +105,21 @@ def room(request,pk):
 @login_required(login_url="login")
 def createRoom(request):
     form = Roomform()
+    topics = Topic.objects.all()
     if request.method == 'POST':
-        form = Roomform(request.POST)
-        if form.is_valid():
-            room = form.save(commit=False)
-            room.host = request.user
-            room.save()
-            return redirect('home')
+        topic_created = request.POST.get('topic')
+        topic , created = Topic.objects.get_or_create(name=topic_created)
+        
+        Room.objects.create(
+            host = request.user,
+            topic = topic,
+            name = request.POST.get('name'),
+            description = request.POST.get('description'),
+        )
+        
+        return redirect('home')
     
-    context = {'form': form}
+    context = {'form': form, 'topic' : topics}
     return render(request, 'base/room_form.html',context)
 
 @login_required(login_url="login")
@@ -136,7 +142,8 @@ def editMsg(request, pk):
 def updateRoom(request, pk):
     room = Room.objects.get(id=pk)
     form = Roomform(instance=room)
-        
+    topics = Topic.objects.all()
+    
     if request.method == 'POST':
         form = Roomform(request.POST, instance=room)
         if form.is_valid():
@@ -145,7 +152,7 @@ def updateRoom(request, pk):
 
     if request.user != room.host:
             return HttpResponse("You are not allowed here!!")
-    context = {'form': form}
+    context = {'form': form,  'topic' : topics}
     return render(request, 'base/room_form.html', context)
 
 
