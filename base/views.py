@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.contrib.auth import login , authenticate , logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # Create your views here.
 
@@ -71,8 +72,21 @@ def homepage(request):
         Q(name__icontains=q) |
         Q(description__icontains=q)  
     )
+    rooms_list = Room.objects.all()
+    # Pagination logic
+    items_per_page = 6  # Show only 6 rooms per page
+    paginator = Paginator(rooms_list, items_per_page)
+    page = request.GET.get('page')
+
+    try:
+        rooms = paginator.page(page)
+    except PageNotAnInteger:
+        rooms = paginator.page(1)
+    except EmptyPage:
+        rooms = paginator.page(paginator.num_pages)
+        
     topic = Topic.objects.all()
-    room_count = rooms.count()
+    room_count = rooms_list.count()
     room_messages = Message.objects.filter(Q(room__topic__name__icontains=q))
     
     context = {'rooms' : rooms , 'topic':topic , 'room_count': room_count , 'room_messages' : room_messages}
@@ -146,9 +160,13 @@ def updateRoom(request, pk):
     
     if request.method == 'POST':
         form = Roomform(request.POST, instance=room)
-        if form.is_valid():
-           form.save()
-           return redirect('home')
+        topic_created = Topic.objects.get('topic')
+        topic , created = Topic.objects.get_or_create(name=topic_created)
+        room.name = request.POST.get('name')
+        room.topic = topic
+        room.description = request.POST.get('description')
+        room.save()
+        return redirect('home')
 
     if request.user != room.host:
             return HttpResponse("You are not allowed here!!")

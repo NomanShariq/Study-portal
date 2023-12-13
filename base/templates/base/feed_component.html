@@ -46,3 +46,20 @@
   </div>
 </div>
 {% endfor %}
+<div style="display: flex; justify-content: space-between; align-items: center">
+  <div style="margin-right: 10px">
+    {% if rooms.has_previous %}
+    <a href="?page={{ rooms.previous_page_number }}">&laquo; Previous</a>
+    {% endif %}
+  </div>
+
+  <span style="margin: 0 10px">
+    Page {{ rooms.number }} of {{ rooms.paginator.num_pages }}.
+  </span>
+
+  <div style="margin-left: 10px">
+    {% if rooms.has_next %}
+    <a href="?page={{ rooms.next_page_number }}">Next &raquo;</a>
+    {% endif %}
+  </div>
+</div>
