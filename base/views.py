@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, render
-from base.form import Roomform
+from base.form import Roomform, UserForm
 from django.db.models import Q
 from django.http import HttpResponse
 from base.models import Message, Room, Topic
@@ -18,6 +18,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 #     {'id' : 3 , 'name' : 'Logo designers needed'}
 # ]
 
+#   Login function
 def loginPage(request):
     page = 'login'
 
@@ -46,10 +47,12 @@ def loginPage(request):
     context = {'page': page}
     return render(request, 'base/login_register.html', context)
 
+#   Logout function
 def logoutUser(request):
     logout(request)
     return redirect('login')
 
+#   Register function
 def registerPage(request):
     form = UserCreationForm()
     
@@ -65,6 +68,7 @@ def registerPage(request):
             messages.error(request, "There is something Error occured during registation!!!.")    
     return render(request, 'base/login_register.html', {'form':form})
 
+#   Index function
 def homepage(request):
     q = request.GET.get('q') if request.GET.get('q') != None else ''
     rooms = Room.objects.filter(
@@ -92,6 +96,7 @@ def homepage(request):
     context = {'rooms' : rooms , 'topic':topic , 'room_count': room_count , 'room_messages' : room_messages}
     return render(request, 'base/home.html', context)
 
+#   User Profile function
 def userProfile(request, pk):
     user = User.objects.get(id=pk)
     room = user.room_set.all()
@@ -100,6 +105,20 @@ def userProfile(request, pk):
     context = {'user':user , 'rooms' : room , 'topic' : topic , 'room_messages' : room_messages}
     return render(request, 'base/profile.html', context) 
 
+#   Edit User function
+@login_required(login_url='login')
+def updateUser(request):
+    user = request.user
+    form = UserForm(instance=user)
+    
+    if request.method == 'POST':
+        form = UserForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('user-Profile', pk=user.id)
+    return render(request, 'base/update-user.html', {'form' : form})
+
+#   ALL Room function
 def room(request,pk): 
     room = Room.objects.get(id=pk)
     room_messages = room.message_set.all().order_by('-created')
@@ -116,6 +135,7 @@ def room(request,pk):
     context = {'rooms':room, 'room_messages' : room_messages , 'participants' : participants}
     return render(request,'base/room.html',context)
 
+#   Create Room function
 @login_required(login_url="login")
 def createRoom(request):
     form = Roomform()
@@ -136,6 +156,41 @@ def createRoom(request):
     context = {'form': form, 'topic' : topics}
     return render(request, 'base/room_form.html',context)
 
+#   Update Room function
+@login_required(login_url="login")
+def updateRoom(request, pk):
+    room = Room.objects.get(id=pk)
+    form = Roomform(instance=room)
+    topics = Topic.objects.all()
+    
+    if request.user != room.host:
+        return HttpResponse("You are not allowed here!!")
+    
+    if request.method == 'POST':
+        topic_created = request.POST.get('topic')
+        topic , created = Topic.objects.get_or_create(name=topic_created)
+        room.name = request.POST.get('name')
+        room.topic = topic
+        room.description = request.POST.get('description')
+        room.save()
+        return redirect('home')
+
+    context = {'form': form,  'topic' : topics}
+    return render(request, 'base/room_form.html', context)
+
+#   Delete Room function
+@login_required(login_url="login")
+def deleteForm(request, pk):
+    room = Room.objects.get(id=pk)
+    
+    if request.user != room.host:
+            return HttpResponse("You are not allowed here!!")
+    if request.method == 'POST':
+        room.delete()
+        return redirect('home')
+    return render(request, 'base/delete_form.html', {'message':room})
+
+#   Edit Msg function
 @login_required(login_url="login")
 def editMsg(request, pk):
     editmsg= Message.objects.get(id=pk)
@@ -152,39 +207,7 @@ def editMsg(request, pk):
     context = {'form': form}
     return render(request, 'base/room_form.html', context)
 
-@login_required(login_url="login")
-def updateRoom(request, pk):
-    room = Room.objects.get(id=pk)
-    form = Roomform(instance=room)
-    topics = Topic.objects.all()
-    
-    if request.method == 'POST':
-        form = Roomform(request.POST, instance=room)
-        topic_created = Topic.objects.get('topic')
-        topic , created = Topic.objects.get_or_create(name=topic_created)
-        room.name = request.POST.get('name')
-        room.topic = topic
-        room.description = request.POST.get('description')
-        room.save()
-        return redirect('home')
-
-    if request.user != room.host:
-            return HttpResponse("You are not allowed here!!")
-    context = {'form': form,  'topic' : topics}
-    return render(request, 'base/room_form.html', context)
-
-
-@login_required(login_url="login")
-def deleteForm(request, pk):
-    room = Room.objects.get(id=pk)
-    
-    if request.user != room.host:
-            return HttpResponse("You are not allowed here!!")
-    if request.method == 'POST':
-        room.delete()
-        return redirect('home')
-    return render(request, 'base/delete_form.html', {'obj':room})
-
+#   Delete Msg function
 @login_required(login_url="login")
 def deleteMessage(request, pk):
     message = Message.objects.get(id=pk)
@@ -197,3 +220,4 @@ def deleteMessage(request, pk):
         return redirect('home')
     
     return render(request, 'base/delete_form.html', {'message' : message})
+

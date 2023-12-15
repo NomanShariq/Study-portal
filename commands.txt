@@ -11,6 +11,8 @@ python manage.py migrate
 for creating new user for admin panel cmd:
 python manage.py createsuperuser
 
+for go to back recent screen :
+{{request.META.HTTP_REFERER}}
 
 
 for clearing command :
@@ -24,3 +26,5 @@ rooms = [
     {'id' : 2 , 'name' : 'Web dvelopers'},
     {'id' : 3 , 'name' : 'Logo designers needed'}
 ]
+
+
