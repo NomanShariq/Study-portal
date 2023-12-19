@@ -69,29 +69,19 @@ def registerPage(request):
     return render(request, 'base/login_register.html', {'form':form})
 
 #   Index function
+
 def homepage(request):
     q = request.GET.get('q') if request.GET.get('q') != None else ''
     rooms = Room.objects.filter(
         Q(topic__name__icontains=q) |
         Q(name__icontains=q) |
         Q(description__icontains=q)  
-    )
+    )[0:5]
     rooms_list = Room.objects.all()
-    # Pagination logic
-    items_per_page = 6  # Show only 6 rooms per page
-    paginator = Paginator(rooms_list, items_per_page)
-    page = request.GET.get('page')
-
-    try:
-        rooms = paginator.page(page)
-    except PageNotAnInteger:
-        rooms = paginator.page(1)
-    except EmptyPage:
-        rooms = paginator.page(paginator.num_pages)
         
-    topic = Topic.objects.all()
+    topic = Topic.objects.all()[0:5]
     room_count = rooms_list.count()
-    room_messages = Message.objects.filter(Q(room__topic__name__icontains=q))
+    room_messages = Message.objects.filter(Q(room__topic__name__icontains=q))[0:3]
     
     context = {'rooms' : rooms , 'topic':topic , 'room_count': room_count , 'room_messages' : room_messages}
     return render(request, 'base/home.html', context)
@@ -221,3 +211,13 @@ def deleteMessage(request, pk):
     
     return render(request, 'base/delete_form.html', {'message' : message})
 
+# Seperate Topics Page
+def topicsPage(request):
+    q = request.GET.get('q') if request.GET.get('q') != None else ''
+    topics = Topic.objects.filter(name__icontains=q)
+    return render(request, 'base/topics.html', {'topics': topics})
+
+# Seperate Activity Page 
+def activityPage(request):
+    room_messages = Message.objects.all()
+    return render(request, 'base/activity.html' , {'room_messages': room_messages})
