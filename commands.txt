@@ -1,4 +1,5 @@
 project create command:
+django-admin startproject projectname
 python manage.py startapp base
 
 run server cmnd:
